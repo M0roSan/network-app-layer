@@ -1,12 +1,23 @@
 #!/usr/bin/python
 import socket, optparse
 import threading
+from os import listdir
+
+import json
+
+def message_files():
+    """Create message: JSON like object"""
+    contents = [file for file in listdir('./database')]
+    message = {'filename': None, 'request': None, 'contents': contents}
+    message_serialized = json.dumps(message)
+    return message_serialized
 
 def handle_controller_connection(controller_socket):
     logger = open('log_ser.txt', 'a')
     request = controller_socket.recv(1024)
-    logger.write('Received %s' % (request))
-    controller_socket.send('ACK!')
+    logger.write('Received %s\n' % (request))
+    message = message_files()
+    controller_socket.send(message)
     logger.close()
     controller_socket.close()
 
