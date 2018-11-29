@@ -40,12 +40,11 @@ def main():
     port_RtoS_command = 50002
     port_RtoS_contents = 50003
 
-    bind_ip_ren = options.ipr
-
+    #RtoC is server side(server-client relationship)
     RtoC_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    RtoC_socket.bind((bind_ip_ren, port_RtoC))
+    RtoC_socket.bind(("", port_RtoC))
     RtoC_socket.listen(5)  # max backlog of connections
-
+    #RtoS is client side
     RtoS_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     RtoS_socket.connect((options.ips, port_RtoS_command))
     
@@ -57,5 +56,6 @@ def main():
     #elif(pid > 0):
     #    handle_controller(RtoC_socket)
     handle_controller(RtoC_socket, RtoS_socket)
+
 if __name__ == '__main__':
     main()

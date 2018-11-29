@@ -83,7 +83,7 @@ def main():
     port_RtoS_command = 50002
 
     StoC_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    StoC_socket.bind((bind_ip_ser, port_CtoS))
+    StoC_socket.bind(("", port_CtoS))
     StoC_socket.listen(5)  # max backlog of connections
 
     RtoS_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
