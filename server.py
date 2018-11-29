@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import socket, optparse
 import threading
 
@@ -6,8 +7,8 @@ def handle_controller_connection(controller_socket):
     request = controller_socket.recv(1024)
     logger.write('Received %s' % (request))
     controller_socket.send('ACK!')
-    controller_socket.close()
     logger.close()
+    controller_socket.close()
 
 def main():
     parser = optparse.OptionParser()
