@@ -15,7 +15,7 @@ while True:
     data = conn.recv(1024)
     print('Server received', repr(data))
 
-    filename='README.md' #In the same folder or path is this file running must the file you want to tranfser to be
+    filename='./database/sample.txt' #In the same folder or path is this file running must the file you want to tranfser to be
     f = open(filename,'rb')
     l = f.read(1024)
     while (l):
