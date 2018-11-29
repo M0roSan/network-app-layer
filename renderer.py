@@ -44,7 +44,7 @@ def main():
     RtoC_socket.listen(5)  # max backlog of connections
 
     RtoS_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    RtoC_socket.connect((options.ips, port_RtoS_command))
+    RtoS_socket.connect((options.ips, port_RtoS_command))
     
 
 
