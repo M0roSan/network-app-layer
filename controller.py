@@ -3,7 +3,7 @@ import sys
 import socket, optparse
 import json
 
-def message_request(filename=None, command, contents=None):
+def message_request(command, filename=None, contents=None):
     """Create message: JSON like object"""
     message = {'filename': filename, 'request': command, 'contents': contents}
     message_serialized = json.dumps(message)
