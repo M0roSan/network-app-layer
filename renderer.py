@@ -8,12 +8,12 @@ def handle_controller_connection(controller_socket, RtoS_socket):
     logger.write('Controller: %s\n' % (request))
     controller_socket.send('ACK-renderer')
     RtoS_socket.send(request)
-    #with open('contents_file.txt', 'w') as f:
-    #    while True:
-    #        response = RtoS_socket.recv(1024)
-    #        if not response:
-    #            break
-    #        f.write(response)
+    with open('contents_file.txt', 'w') as f:
+        while True:
+            response = RtoS_socket.recv(1024)
+            if not response:
+                break
+            f.write(response)
     response = RtoS_socket.recv(1024)
     logger.write(response)
     logger.close()
