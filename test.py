@@ -27,8 +27,8 @@ def main():
 
 
     CLI( net )
-    p1.terminate()
-    p3.terminate()
+    #p1.terminate()
+    #p3.terminate()
     net.stop()
     #------------------------------------------------------------------------#
 
