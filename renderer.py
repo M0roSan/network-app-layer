@@ -7,8 +7,8 @@ def handle_controller_connection(controller_socket, RtoS_socket):
     request = controller_socket.recv(1024)
     logger.write('Received %s\n' % (request))
     controller_socket.send('ACK-renderer')
-    RtoC_socket.send(request)
-    response = RtoC_socket.recv(4096)
+    RtoS_socket.send(request)
+    response = RtoS_socket.recv(4096)
     logger.write(response)
     logger.flush()
     logger.close()
@@ -17,7 +17,7 @@ def handle_controller_connection(controller_socket, RtoS_socket):
 def handle_controller(RtoC_socket, RtoS_socket):
     while True:
         controller_sock, address = RtoC_socket.accept()
-        print 'Accepted connection from {}:{}'.format(address[0], address[1])
+        #print 'Accepted connection from {}:{}'.format(address[0], address[1])
         client_handler = threading.Thread(
             target=handle_controller_connection,
             args=(controller_sock,RtoS_socket,)

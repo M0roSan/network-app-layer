@@ -25,7 +25,7 @@ def handle_controller_connection(controller_socket):
 def handle_controller(StoC_socket):
     while True:
         controller_sock, address = StoC_socket.accept()
-        print 'Accepted connection from {}:{}'.format(address[0], address[1])
+        #print 'Accepted connection from {}:{}'.format(address[0], address[1])
         client_handler = threading.Thread(
             target=handle_controller_connection,
             args=(controller_sock,)
@@ -43,7 +43,7 @@ def handle_renderer_connection(renderer_socket):
 def handle_renderer(RtoS_socket):
     while True:
         renderer_sock, address = RtoS_socket.accept()
-        print 'Accepted connection from {}:{}'.format(address[0], address[1])
+        #print 'Accepted connection from {}:{}'.format(address[0], address[1])
         client_handler = threading.Thread(
             target=handle_renderer_connection,
             args=(renderer_sock,)
