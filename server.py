@@ -13,6 +13,20 @@ def message_files():
     message_serialized = json.dumps(message)
     return message_serialized
 
+#def message_contents():
+
+def get_filename(message):
+    """returns string file name retrieved from message"""
+    message_deserialized = json.loads(message)
+    filename = message_deserialized['filename'] #returns unicode
+    return str(filename)
+
+def file_exist(filename):
+    """"return True if the given file exist in our directory"""
+    if filename in listdir('./database'):
+        return True
+    return False
+
 def handle_controller_connection(controller_socket):
     logger = open('log_ser_con.txt', 'a')
     request = controller_socket.recv(1024)
@@ -36,7 +50,15 @@ def handle_renderer_connection(renderer_socket):
     logger = open('log_ser_ren.txt', 'a')
     request = renderer_socket.recv(1024)
     logger.write('Renderer: %s\n' % (request))
-    renderer_socket.send('ACK - server')
+
+    filename = get_filename(request)
+    f = open(filename, 'r')
+    l = f.read(1024)
+    while(l):
+
+        renderer_socket.send(l)
+        l = f.read(1024)
+    f.close()
     logger.close()
     renderer_socket.close()
 

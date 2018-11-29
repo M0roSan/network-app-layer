@@ -8,4 +8,4 @@
 1. h1 python server.py &
 2. h3 python renderer.py &
 3. h2 python controller.py -c 1 // h2 contacts to h1
-4. h2 python controller.py -c 2 // h2 contacts to h3, and then h3 contacts to h1
+4. h2 python controller.py -c 2 -f sample.txt // h2 contacts to h3, and then h3 contacts to h1

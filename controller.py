@@ -41,7 +41,7 @@ def main():
         else:
             RtoC_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             RtoC_socket.connect((options.ipr, port_RtoC))
-            message = message_request(command)
+            message = message_request(command, filename)
             RtoC_socket.send(message)
             response = RtoC_socket.recv(4096)
             logger.write("Renderer: %s\n" % (response))
