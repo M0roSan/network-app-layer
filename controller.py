@@ -9,6 +9,12 @@ def message_request(command, filename=None, contents=None):
     message_serialized = json.dumps(message)
     return message_serialized
 
+def get_files(message):
+    """returns string file name retrieved from message"""
+    message_deserialized = json.loads(message)
+    filename = message_deserialized['contents'] #returns unicode
+    return str(filename)
+
 def main():
     parser = optparse.OptionParser()
     parser.add_option('--is', dest='ips', default='10.0.0.1')
@@ -35,13 +41,15 @@ def main():
             message = message_request(command)
             CtoS_socket.send(message)
             response = CtoS_socket.recv(4096)
+            contents = get_files(response)
+            print("Available files are: \n{}".format(contents))
             logger.write("Server: %s\n" % (response))
             logger.flush()
             logger.close()
         else:
             RtoC_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             RtoC_socket.connect((options.ipr, port_RtoC))
-            message = message_request(command)
+            message = message_request(command, filename)
             RtoC_socket.send(message)
             response = RtoC_socket.recv(4096)
             logger.write("Renderer: %s\n" % (response))
