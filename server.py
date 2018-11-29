@@ -52,12 +52,13 @@ def handle_renderer_connection(renderer_socket):
     logger.write('Renderer: %s\n' % (request))
 
     filename = get_filename(request)
-    path = './database/'.join(filename)
-    f = open(path, 'rb')
-    l = f.read(1024)
-    while(l):
-        renderer_socket.send(l)
+    file_path = './database/' + filename
+    f = open(file_path, 'rb')
+    with open(file_path, 'rb') as f:
         l = f.read(1024)
+        while(l):
+            renderer_socket.send(l)
+            l = f.read(1024)
     f.close()
     renderer_socket.send('Server: ACK received')
     logger.close()
