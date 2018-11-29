@@ -2,6 +2,7 @@
 import socket, optparse
 import threading
 from os import listdir, fork
+from time import sleep
 
 import json
 
@@ -46,7 +47,7 @@ def main():
 
     if(pid == 0):
         #do something
-        print('hello world')
+        sleep(3)
     elif(pid > 0):
         handle_controller(StoC_socket)
 
