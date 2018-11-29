@@ -1,8 +1,5 @@
 clean:
-	find . -name '*.pyc' -exec rm --force {} + 
-	find . -name '*.pyo' -exec rm --force {} + 
-	name '*~' -exec rm --force {} 
-	name 'log_* -exec rm --force {}
+	rm log_* --force
 
 run:
 	python server.py &

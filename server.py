@@ -44,9 +44,10 @@ def main():
 
     pid = fork()
 
-    if pid == 0:
+    if(pid == 0):
         #do something
-    elif pid > 0:
+        print('hello world')
+    elif(pid > 0):
         handle_controller(StoC_socket)
 
 if __name__ == '__main__':
