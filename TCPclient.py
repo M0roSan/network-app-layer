@@ -1,7 +1,7 @@
 import socket                   # Import socket module
 
 s = socket.socket()             # Create a socket object
-host = "1somehing.11somehing."  #Ip address that the TCPServer  is there
+host = "127.0.0.1"  #Ip address that the TCPServer  is there
 port = 40000                     # Reserve a port for your service every new transfer wants a new port or you must wait.
 
 s.connect((host, port))
