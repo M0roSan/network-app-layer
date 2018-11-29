@@ -10,11 +10,12 @@ def main():
     port_CtoS = 50000
     CtoS_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     CtoS_socket.connect((options.ips, port_CtoS))
+    logger = open('log_con.txt', 'w')
 
     CtoS_socket.send('GET REQUEST')
     response = CtoS_socket.recv(4096)
-    logger = open('log_con.txt', 'w')
     logger.write(response)
+    logger.flush()
     logger.close()
 
 if __name__ == '__main__':

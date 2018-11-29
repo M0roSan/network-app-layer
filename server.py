@@ -4,7 +4,7 @@ import threading
 def handle_controller_connection(controller_socket):
     logger = open('log_ser.txt', 'a')
     request = controller_socket.recv(1024)
-    logger.write('Received {}'.format(request))
+    logger.write('Received %s' % (request))
     controller_socket.send('ACK!')
     controller_socket.close()
     logger.close()
