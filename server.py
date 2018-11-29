@@ -32,21 +32,25 @@ def handle_controller(StoC_socket):
         )
         client_handler.start()
 
-def handle_renderer_connection(renderer_socket):
+def handle_renderer_connection(renderer_socket, RtoS_socket_cont):
     logger = open('log_ser_ren.txt', 'a')
     request = renderer_socket.recv(1024)
     logger.write('Renderer: %s\n' % (request))
-    renderer_socket.send('ACK - server')
+    renderer_socket.send('Server comm: acked')
+    RtoS_socket_cont.send(request)
+    response = RtoS_socket_cont.recv(4096)
+    logger.write('Server: %s\n' % (response))
+    logger.flush()
     logger.close()
     renderer_socket.close()
 
-def handle_renderer(RtoS_socket):
+def handle_renderer(RtoS_socket_comm, RtoS_socket_cont):
     while True:
-        renderer_sock, address = RtoS_socket.accept()
+        renderer_sock, address = RtoS_socket_comm.accept()
         #print 'Accepted connection from {}:{}'.format(address[0], address[1])
         client_handler = threading.Thread(
             target=handle_renderer_connection,
-            args=(renderer_sock,)
+            args=(renderer_sock, RtoS_socket_cont)
         )
         client_handler.start()
 
@@ -59,19 +63,22 @@ def main():
 
     port_CtoS = 50000
     port_RtoS_command = 50002
-
+    port_RtoS_contents = 50003
     StoC_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     StoC_socket.bind((bind_ip_ser, port_CtoS))
     StoC_socket.listen(5)  # max backlog of connections
 
-    RtoS_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    RtoS_socket.bind((bind_ip_ser, port_RtoS_command))
-    RtoS_socket.listen(5)  # max backlog of connections
+    RtoS_socket_comm = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    RtoS_socket_comm.bind((bind_ip_ser, port_RtoS_command))
+    RtoS_socket_comm.listen(5)  # max backlog of connections
+
+    RtoS_socket_cont = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    RtoS_socket_comt.connect((options.ipr, port_RtoS_contents))
 
     pid = fork()
 
     if(pid == 0):
-        handle_renderer(RtoS_socket)
+        handle_renderer(RtoS_socket_comm, RtoS_socket_cont)
     elif(pid > 0):
         handle_controller(StoC_socket)
 
