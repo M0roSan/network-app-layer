@@ -55,16 +55,17 @@ def main():
     parser.add_option('--ir', dest='ipr', default='')
     parser.add_option('--is', dest='ips', default='')
     (options, args) = parser.parse_args()
-    bind_ip = options.ips
+    bind_ip_ser = options.ips
+
     port_CtoS = 50000
     port_RtoS_command = 50002
 
     StoC_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    StoC_socket.bind((bind_ip, port_CtoS))
+    StoC_socket.bind((bind_ip_ser, port_CtoS))
     StoC_socket.listen(5)  # max backlog of connections
 
     RtoS_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    RtoS_socket.bind((bind_ip, port_RtoS_command))
+    RtoS_socket.bind((bind_ip_ser, port_RtoS_command))
     RtoS_socket.listen(5)  # max backlog of connections
 
     pid = fork()
