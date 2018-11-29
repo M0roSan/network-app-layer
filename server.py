@@ -52,7 +52,8 @@ def handle_renderer_connection(renderer_socket):
     logger.write('Renderer: %s\n' % (request))
 
     filename = get_filename(request)
-    f = open(filename, 'rb')
+    path = './database/'.join(filename)
+    f = open(path, 'rb')
     l = f.read(1024)
     while(l):
         renderer_socket.send(l)

@@ -1,10 +1,14 @@
 //Follow these steps 
 //In VM
-1. sudo python test.py
+1. sudo mn -c //clean up mininet to clean state
+2. sudo python test.py
 //this will create single switch topology, 3 hosts
 //set ip for h1, h2, h3 to 10.0.0.1, 10.0.0.2, 10.0.0.3 respectively
 
 //In mininet
 
-1. h2 python controller.py -c 1 // h2 contacts to h1
-2. h2 python controller.py -c 2 -f sample.txt // h2 contacts to h3, and then h3 contacts to h1
+1. h1 python server.py & //server opens up and works in background
+2. h3 python renderer.py & // renderer opens up and works in background
+###WARNING### don't change the order of 1 and 2
+3. h2 python controller.py -c 1 // h2 contacts to h1
+4. h2 python controller.py -c 2 -f sample.txt // h2 contacts to h3, and then h3 contacts to h1
