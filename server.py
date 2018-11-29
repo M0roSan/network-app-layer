@@ -52,8 +52,8 @@ def handle_renderer(RtoS_socket):
 
 def main():
     parser = optparse.OptionParser()
-    parser.add_option('--ir', dest='ipr', default='')
-    parser.add_option('--is', dest='ips', default='')
+    parser.add_option('--is', dest='ips', default='10.0.0.1')
+    parser.add_option('--ir', dest='ipr', default='10.0.0.3')
     (options, args) = parser.parse_args()
     bind_ip_ser = options.ips
 

@@ -14,20 +14,16 @@ def main():
     h2 = net.get('h2') #controller
     h3 = net.get('h3') #renderer
 
-    p1 = h1.popen('python server.py --is %s --ir %s &' % (h1.IP(), h3.IP()))
+    h1.setIP('10.0.0.1')
+    h2.setIP('10.0.0.2')
+    h3.setIP('10.0.0.3')
 
-    p3 = h3.popen('python renderer.py --ir %s --is %s &' % (h3.IP(), h1.IP()))
+    p1 = h1.popen('python server.py &') # server opens up and works in background
 
-    #below here can be done in CLI.
-    #-----------------------------------------------------------------------#
-    #h2.cmd('python controller.py --is %s --ir %s -c 1' % (h1.IP(), h3.IP())) #REQUST message
+    p3 = h3.popen('python renderer.py &') # renderer opens up and works in background
 
-    
-
-    #h2.cmd('python controller.py --is %s --ir %s -c 2' % (h1.IP(), h3.IP())) #PLAY message
-    #h2.cmd('python controller.py --is %s --ir %s -c 3' % (h1.IP(), h3.IP())) #STOP message
-    #h2.cmd('python controller.py --is %s --ir %s -c 4' % (h1.IP(), h3.IP())) #RESUME message
-    #h2.cmd('python controller.py --is %s --ir %s -c 5' % (h1.IP(), h3.IP())) #PLAY_FROM_BEGINNING message
+    ### WARNING ###
+    # order matters. Don't switch p1 and p3
 
 
     CLI( net )

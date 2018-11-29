@@ -11,8 +11,8 @@ def message_request(command, filename=None, contents=None):
 
 def main():
     parser = optparse.OptionParser()
-    parser.add_option('--is', dest='ips', default='127.0.0.1')
-    parser.add_option('--ir', dest='ipr', default='127.0.0.1')
+    parser.add_option('--is', dest='ips', default='10.0.0.1')
+    parser.add_option('--ir', dest='ipr', default='10.0.0.3')
     parser.add_option('-c', dest='command', type='int', default='0')
     parser.add_option('-f', dest='filename', default='sample.txt')
     (options, args) = parser.parse_args()
@@ -35,7 +35,7 @@ def main():
             message = message_request(command)
             CtoS_socket.send(message)
             response = CtoS_socket.recv(4096)
-            logger.write(response)
+            logger.write("Server: %s\n" % (response))
             logger.flush()
             logger.close()
         else:
