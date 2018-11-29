@@ -5,11 +5,11 @@ from os import fork
 def handle_controller_connection(controller_socket, RtoS_socket):
     logger = open('log_ren.txt', 'a')
     request = controller_socket.recv(1024)
-    logger.write('Received %s\n' % (request))
+    logger.write('Controller: %s\n' % (request))
     controller_socket.send('ACK-renderer')
     RtoS_socket.send(request)
     response = RtoS_socket.recv(4096)
-    logger.write(response)
+    logger.write('Server: %s\n' % (response))
     logger.flush()
     logger.close()
     controller_socket.close()

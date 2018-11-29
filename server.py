@@ -16,7 +16,7 @@ def message_files():
 def handle_controller_connection(controller_socket):
     logger = open('log_ser_con.txt', 'a')
     request = controller_socket.recv(1024)
-    logger.write('Received %s\n' % (request))
+    logger.write('Controller: %s\n' % (request))
     message = message_files()
     controller_socket.send(message)
     logger.close()
@@ -35,8 +35,8 @@ def handle_controller(StoC_socket):
 def handle_renderer_connection(renderer_socket):
     logger = open('log_ser_ren.txt', 'a')
     request = renderer_socket.recv(1024)
-    logger.write('Received %s\n' % (request))
-    renderer_socket.send('ACK -server')
+    logger.write('Renderer: %s\n' % (request))
+    renderer_socket.send('ACK - server')
     logger.close()
     renderer_socket.close()
 

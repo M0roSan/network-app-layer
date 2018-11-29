@@ -44,7 +44,7 @@ def main():
             message = message_request(command)
             RtoC_socket.send(message)
             response = RtoC_socket.recv(4096)
-            logger.write(response)
+            logger.write("Renderer: %s\n" % (response))
             logger.flush()
             logger.close()
 
