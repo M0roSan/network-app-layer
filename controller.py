@@ -13,8 +13,9 @@ def main():
 
     CtoS_socket.send('GET REQUEST')
     response = CtoS_socket.recv(4096)
-    print(response)
-
+    logger = open('log_con.txt', 'w')
+    logger.write(response)
+    logger.close()
 
 if __name__ == '__main__':
     main()
