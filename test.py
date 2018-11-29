@@ -18,9 +18,9 @@ def main():
     h2.setIP('10.0.0.2')
     h3.setIP('10.0.0.3')
 
-    p1 = h1.popen('python server.py &') # server opens up and works in background
+    #p1 = h1.popen('python server.py &') # server opens up and works in background
 
-    p3 = h3.popen('python renderer.py &') # renderer opens up and works in background
+    #p3 = h3.popen('python renderer.py &') # renderer opens up and works in background
 
     ### WARNING ###
     # order matters. Don't switch p1 and p3
