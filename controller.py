@@ -3,7 +3,7 @@ import sys
 import socket, optparse
 import json
 
-def message_request(filename, command, contents=None):
+def message_request(filename=None, command, contents=None):
     """Create message: JSON like object"""
     message = {'filename': filename, 'request': command, 'contents': contents}
     message_serialized = json.dumps(message)
@@ -29,7 +29,7 @@ def main():
         CtoS_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         CtoS_socket.connect((options.ips, port_CtoS))
         logger = open('log_con.txt', 'w')
-        message = message_request(filename, command)
+        message = message_request(command)
         CtoS_socket.send(message)
         response = CtoS_socket.recv(4096)
         logger.write(response)
