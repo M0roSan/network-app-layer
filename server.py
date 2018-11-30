@@ -2,8 +2,6 @@
 import socket, optparse
 import threading
 from os import listdir, fork
-from time import sleep
-
 import json
 
 def message_files():
