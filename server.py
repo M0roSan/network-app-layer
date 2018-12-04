@@ -3,7 +3,7 @@ import socket, optparse
 import threading
 from os import listdir, fork
 from message import Message
-import time, errno
+import time, errno, fcntl
 
 q = ['first item']
 qLock = threading.Lock()
@@ -112,7 +112,7 @@ def main():
 
     RtoS_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     RtoS_socket.bind(("", port_RtoS_command))
-    RtoS_socket.setblocking(0)
+    fcntl.fcntl(RtoS_socket, fcntl.F_SETFL, os.O_NONBLOCK)
     RtoS_socket.listen(5)  # max backlog of connections
 
     pid = fork()
