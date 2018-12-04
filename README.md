@@ -1,6 +1,12 @@
 Follow these steps  
-In VM  
-first clean up mininet to clean state  
+
+Open terminal application (Xming for Windows/XQuartz for MacOS) 
+Log on to mininet using the command
+```
+    ssh -Y mininet@hostIPAddress
+```
+
+Then clean up mininet to clean state  
 ```
     sudo mn -c
 ```
@@ -12,17 +18,24 @@ set ip for h1, h2, h3 to 10.0.0.1, 10.0.0.2, 10.0.0.3 respectively
 
 After this above line, it goes into mininet CLI
 
-Open server in h1, make sure it runs in background
+Open terminals for each host  
 ```
-    h1 python server.py &
+    xterm h1 h3 h2
 ```
-Open renderer in h3, make sure it runs in background
+
+Open server in h1  
+```
+    python server.py 
+```
+Open renderer in h3  
 ``` 
-    h3 python renderer.py &
+    python renderer.py 
 ```
+
 ### WARNING
 Order matters. Make sure server.py runs first, then renderer.py second. 
 
+Now commands can be sent from the controller window to perform operations
 Commands you can send:  
 1: request list of available files to stream   
 2: play file. -f filename should be provided. Otherwise, default file is sample.txt   
@@ -32,14 +45,14 @@ Commands you can send:
 
 Format for command:
 ```
-    h2 python controller.py -c <command> [-f filename]
+    python controller.py -c <command> [-f filename]
 ```
 Below are examples of commands you can send using controller
 
 
 ```
-    h2 python controller.py -c 1
+    python controller.py -c 1
 ```
 ```
-    h2 python controller.py -c 2 -f alice_in_wonderland.txt
+    python controller.py -c 2 -f alice_in_wonderland.txt
 ```

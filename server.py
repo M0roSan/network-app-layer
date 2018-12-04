@@ -2,42 +2,23 @@
 import socket, optparse
 import threading
 from os import listdir, fork
-import json
+from message import Message
+import time
 
-def message_files():
-    """Create message: JSON like object"""
-    contents = [file for file in listdir('./database')]
-    message = {'filename': None, 'request': None, 'contents': contents}
-    message_serialized = json.dumps(message)
-    return message_serialized
-
-#def message_contents():
-
-def get_filename(message):
-    """returns string file name retrieved from message"""
-    message_deserialized = json.loads(message)
-    filename = message_deserialized['filename'] #returns unicode
-    return str(filename)
-
-def file_exist(filename):
-    """"return True if the given file exist in our directory"""
-    if filename in listdir('./database'):
-        return True
-    return False
+q = ['first item']
 
 def handle_controller_connection(controller_socket):
-    logger = open('log_ser_con.txt', 'a')
     request = controller_socket.recv(1024)
-    logger.write('Controller: %s\n' % (request))
-    message = message_files()
-    controller_socket.send(message)
-    logger.close()
+    print('Controller: {}\n'.format(request))
+    contents = [file for file in listdir('./database')]
+    message = Message(payload=contents)
+    controller_socket.send(message.export())
     controller_socket.close()
 
 def handle_controller(StoC_socket):
     while True:
         controller_sock, address = StoC_socket.accept()
-        #print 'Accepted connection from {}:{}'.format(address[0], address[1])
+        print 'Accepted connection from {}:{}'.format(address[0], address[1])
         client_handler = threading.Thread(
             target=handle_controller_connection,
             args=(controller_sock,)
@@ -45,27 +26,48 @@ def handle_controller(StoC_socket):
         client_handler.start()
 
 def handle_renderer_connection(renderer_socket):
-    logger = open('log_ser_ren.txt', 'a')
     request = renderer_socket.recv(1024)
-    logger.write('Renderer: %s\n' % (request))
+    print('Renderer: {}\n'.format(request))
+    message_rec = Message()
+    message_rec.decode(request)
+    filename = message_rec.filename
+    file_path = './database/' + str(filename)
+    message_send = Message()
+    if message_rec.command == 2: #PLAY
+        filename = message_rec.filename
+        file_path = './database/' + str(filename)
+        message_send = Message()
+        
+        try:
+            with open(file_path, 'rb') as f:
+                contents = f.read(1024)
+                while(contents):
+                    print('reading another 1024')
+                    item = q.pop()
+                    if item == 'stop':
+                        break
 
-    filename = get_filename(request)
-    file_path = './database/' + filename
-    f = open(file_path, 'rb')
-    with open(file_path, 'rb') as f:
-        l = f.read(1024)
-        while(l):
-            renderer_socket.send(l)
-            l = f.read(1024)
-    f.close()
-    renderer_socket.send('Server: ACK received')
-    logger.close()
+                    message_send.payload = contents
+                    renderer_socket.send(message_send.export())
+                    contents = f.read(1024)
+                    q.append('dummy')
+                    time.sleep(1)
+            f.close()
+        except:
+            message_send.payload('File does not exist')
+            renderer_socket.send(message_send.export())
+    if message_rec.command == 3: #STOP
+        q.append('stop')
+        print('stop playing')
+    if message_rec.command == 4: #RESUME
+        q.append('resume')
+        print('resume playing')
     renderer_socket.close()
 
 def handle_renderer(RtoS_socket):
     while True:
         renderer_sock, address = RtoS_socket.accept()
-        #print 'Accepted connection from {}:{}'.format(address[0], address[1])
+        print 'Accepted connection from {}:{}'.format(address[0], address[1])
         client_handler = threading.Thread(
             target=handle_renderer_connection,
             args=(renderer_sock,)
@@ -87,7 +89,7 @@ def main():
     StoC_socket.listen(5)  # max backlog of connections
 
     RtoS_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    RtoS_socket.bind((bind_ip_ser, port_RtoS_command))
+    RtoS_socket.bind(("", port_RtoS_command))
     RtoS_socket.listen(5)  # max backlog of connections
 
     pid = fork()
