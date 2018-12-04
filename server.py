@@ -43,7 +43,7 @@ def handle_renderer_connection(renderer_socket):
                 contents = f.read(1024)
                 while(contents):
                     
-                    item = q.remove()
+                    item = q.pop()
                     if item == 'stop':
                         break
 
