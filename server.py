@@ -28,7 +28,7 @@ def handle_renderer_connection(renderer_socket):
     message_rec = Message()
     message_rec.decode(request)
     filename = message_rec.filename
-    file_path = './database/' + filename
+    file_path = './database/' + str(filename)
     message_send = Message()
     try:
         with open(file_path, 'rb') as f:
