@@ -1,24 +1,42 @@
 import socket, optparse
 import threading
+import fcntl, os
+import sys
+import errno
 from os import fork
 from message import Message
 
 def handle_controller_connection(controller_socket, RtoS_socket):
-    request = controller_socket.recv(1024)
-    print('Controller: {}\n'.format(request))
-    message_con = Message(payload='ACK-renderer')
-    controller_socket.send(message_con.export())
-
-    RtoS_socket.send(request)
-
-    message = Message()
     while True:
-        response = RtoS_socket.recv(1024)
-        if not response:
-            break
-        #message.decode(response)
-        #print(message.payload)
-        print(response)
+
+        try:
+            request = controller_socket.recv(1024)
+        except socket.error, e:
+            err = e.args[0]
+            if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
+                sleep(1)
+                print 'No data available'
+                continue
+            else:
+                # a "real" error occurred
+                print e
+                sys.exit(1)
+        else:
+
+            print('Controller: {}\n'.format(request))
+            message_con = Message(payload='ACK-renderer')
+            controller_socket.send(message_con.export())
+
+            RtoS_socket.send(request)
+
+            message = Message()
+            while True:
+                response = RtoS_socket.recv(1024)
+                if not response:
+                    break
+                #message.decode(response)
+                #print(message.payload)
+                print(response)
     controller_socket.close()
 
 def handle_controller(RtoC_socket, RtoS_socket):
@@ -47,6 +65,7 @@ def main():
     #RtoS is client side
     RtoS_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     RtoS_socket.connect((options.ips, port_RtoS))
+    fcntl.fcntl(RtoS_socket, fcntl.F_SETFL, os.O_NONBLOCK)
 
     handle_controller(RtoC_socket, RtoS_socket)
 

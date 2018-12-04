@@ -6,6 +6,7 @@ from message import Message
 import time
 
 q = ['first item']
+qLock = threading.Lock()
 
 def handle_controller_connection(controller_socket):
     request = controller_socket.recv(1024)
@@ -31,8 +32,7 @@ def handle_renderer_connection(renderer_socket):
     message_rec = Message()
     message_rec.decode(request)
     filename = message_rec.filename
-    file_path = './database/' + str(filename)
-    message_send = Message()
+
     if message_rec.command == 2: #PLAY
         filename = message_rec.filename
         file_path = './database/' + str(filename)
@@ -43,25 +43,34 @@ def handle_renderer_connection(renderer_socket):
                 contents = f.read(1024)
                 while(contents):
                     print('reading another 1024')
+                    qLock.acquire()
                     item = q.pop()
+                    qLock.release()
                     if item == 'stop':
                         break
 
                     message_send.payload = contents
                     renderer_socket.send(message_send.export())
                     contents = f.read(1024)
+                    qLock.acquire()
                     q.append('dummy')
+                    qLock.release()
                     time.sleep(1)
             f.close()
         except:
             message_send.payload('File does not exist')
             renderer_socket.send(message_send.export())
     if message_rec.command == 3: #STOP
+        qLock.acquire()
         q.append('stop')
+        qLock.release()
         print('stop playing')
     if message_rec.command == 4: #RESUME
+        qLock.acquire()
         q.append('resume')
+        qLock.release()
         print('resume playing')
+
     renderer_socket.close()
 
 def handle_renderer(RtoS_socket):
