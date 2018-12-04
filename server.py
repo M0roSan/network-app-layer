@@ -68,7 +68,7 @@ def main():
     StoC_socket.listen(5)  # max backlog of connections
 
     RtoS_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    RtoS_socket.bind((bind_ip_ser, port_RtoS_command))
+    RtoS_socket.bind(("", port_RtoS_command))
     RtoS_socket.listen(5)  # max backlog of connections
 
     pid = fork()
