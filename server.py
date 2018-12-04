@@ -38,18 +38,19 @@ def handle_renderer_connection(renderer_socket):
         filename = message_rec.filename
         file_path = './database/' + str(filename)
         message_send = Message()
-        try:
-            item = q.get(False)
-            if item == 'stop':
-                item2 = q.get(True)
-                if item2 == 'resume':
-                    pass
-        except:
-            pass
+        
         try:
             with open(file_path, 'rb') as f:
                 contents = f.read(1024)
                 while(contents):
+                    try:
+                        item = q.get(False)
+                        if item == 'stop':
+                            item2 = q.get(True)
+                            if item2 == 'resume':
+                                pass
+                    except:
+                        pass
                     message_send.payload = contents
                     renderer_socket.send(message_send.export())
                     contents = f.read(1024)
