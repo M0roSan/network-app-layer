@@ -3,6 +3,7 @@ import socket, optparse
 import threading
 from os import listdir, fork
 from message import Message
+import time
 
 def handle_controller_connection(controller_socket):
     request = controller_socket.recv(1024)
@@ -37,6 +38,7 @@ def handle_renderer_connection(renderer_socket):
                 message_send.payload = contents
                 renderer_socket.send(message_send.export())
                 contents = f.read(1024)
+                time.sleep(1)
         f.close()
     except:
         message_send.payload('File does not exist')
