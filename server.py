@@ -4,9 +4,8 @@ import threading
 from os import listdir, fork
 from message import Message
 import time
-import Queue
 
-q = Queue.Queue
+q = []
 
 def handle_controller_connection(controller_socket):
     request = controller_socket.recv(1024)
@@ -44,11 +43,10 @@ def handle_renderer_connection(renderer_socket):
                 contents = f.read(1024)
                 while(contents):
                     try:
-                        item = q.get(False)
-                        if item == 'stop':
-                            item2 = q.get(True)
-                            if item2 == 'resume':
-                                pass
+                        if len(q) > 0:
+                            item = q.pop(0)
+                            if item == 'stop':
+                                break
                     except:
                         message_send.payload = contents
                         renderer_socket.send(message_send.export())
@@ -59,10 +57,10 @@ def handle_renderer_connection(renderer_socket):
             message_send.payload('File does not exist')
             renderer_socket.send(message_send.export())
     if message_rec.command == 3: #STOP
-        q.put('stop')
+        q.append('stop')
         print('stop playing')
     if message_rec.command == 4: #RESUME
-        q.put('resume')
+        q.append('resume')
         print('resume playing')
     renderer_socket.close()
 
