@@ -2,12 +2,8 @@
 import sys
 import socket, optparse
 import json
+from message import Message
 
-def message_request(command, filename=None, contents=None):
-    """Create message: JSON like object"""
-    message = {'filename': filename, 'request': command, 'contents': contents}
-    message_serialized = json.dumps(message)
-    return message_serialized
 
 def get_files(message):
     """returns string file name retrieved from message"""
@@ -33,28 +29,24 @@ def main():
         print('ERROR REQUEST TYPE. PLEASE TYPE NUMBER FROM 1 to 5. \n e.g.) python controller.py -c 3\n')
         sys.exit()
     else:
-        logger = open('log_con.txt', 'a')
-
         if(command == 1):
             CtoS_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             CtoS_socket.connect((options.ips, port_CtoS))
-            message = message_request(command)
-            CtoS_socket.send(message)
+            message = Message(command=command)
+            CtoS_socket.send(message.export())
             response = CtoS_socket.recv(4096)
-            contents = get_files(response)
-            print("Available files are: \n{}".format(contents))
-            logger.write("Server: %s\n" % (response))
-            logger.flush()
-            logger.close()
+            message_rec = Message()
+            message_rec.decode(response)
+            print("Available files are: \n{}".format(message_rec.payload))
+
         else:
             RtoC_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             RtoC_socket.connect((options.ipr, port_RtoC))
-            message = message_request(command, filename)
-            RtoC_socket.send(message)
+            message = Message(command=command, filename=filename)
+            RtoC_socket.send(message.export())
             response = RtoC_socket.recv(4096)
-            logger.write("Renderer: %s\n" % (response))
-            logger.flush()
-            logger.close()
+            print("Received from rendedrer: {}".format(response))
+
 
 if __name__ == '__main__':
     main()

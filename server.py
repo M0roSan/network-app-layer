@@ -3,15 +3,7 @@ import socket, optparse
 import threading
 from os import listdir, fork
 import json
-
-def message_files():
-    """Create message: JSON like object"""
-    contents = [file for file in listdir('./database')]
-    message = {'filename': None, 'request': None, 'contents': contents}
-    message_serialized = json.dumps(message)
-    return message_serialized
-
-#def message_contents():
+from message import Message
 
 def get_filename(message):
     """returns string file name retrieved from message"""
@@ -26,18 +18,17 @@ def file_exist(filename):
     return False
 
 def handle_controller_connection(controller_socket):
-    logger = open('log_ser_con.txt', 'a')
     request = controller_socket.recv(1024)
-    logger.write('Controller: %s\n' % (request))
-    message = message_files()
-    controller_socket.send(message)
-    logger.close()
+    print('Controller: {}\n'.format(request))
+    contents = [file for file in listdir('./database')]
+    message = Message(payload=contents)
+    controller_socket.send(message.export())
     controller_socket.close()
 
 def handle_controller(StoC_socket):
     while True:
         controller_sock, address = StoC_socket.accept()
-        #print 'Accepted connection from {}:{}'.format(address[0], address[1])
+        print 'Accepted connection from {}:{}'.format(address[0], address[1])
         client_handler = threading.Thread(
             target=handle_controller_connection,
             args=(controller_sock,)
@@ -45,21 +36,24 @@ def handle_controller(StoC_socket):
         client_handler.start()
 
 def handle_renderer_connection(renderer_socket):
-    logger = open('log_ser_ren.txt', 'a')
     request = renderer_socket.recv(1024)
-    logger.write('Renderer: %s\n' % (request))
-
-    filename = get_filename(request)
+    print('Renderer: {}\n'.format(request))
+    message_rec = Message()
+    message_rec.decode(request)
+    filename = message_rec.filename
     file_path = './database/' + filename
-    f = open(file_path, 'rb')
-    with open(file_path, 'rb') as f:
-        l = f.read(1024)
-        while(l):
-            renderer_socket.send(l)
-            l = f.read(1024)
-    f.close()
-    renderer_socket.send('Server: ACK received')
-    logger.close()
+    message_send = Message()
+    try:
+        with open(file_path, 'rb') as f:
+            contents = f.read(1024)
+            while(contents):
+                message_send.payload = contents
+                renderer_socket.send(message_send.export())
+                contents = f.read(1024)
+        f.close()
+    except:
+        message_send.payload('File does not exist')
+        renderer_socket.send(message_send.export())
     renderer_socket.close()
 
 def handle_renderer(RtoS_socket):
