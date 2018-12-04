@@ -3,7 +3,7 @@ import socket, optparse
 import threading
 from os import listdir, fork
 from message import Message
-import time
+import time, errno
 
 q = ['first item']
 qLock = threading.Lock()
@@ -27,51 +27,64 @@ def handle_controller(StoC_socket):
         client_handler.start()
 
 def handle_renderer_connection(renderer_socket):
-    request = renderer_socket.recv(1024)
-    print('Renderer: {}\n'.format(request))
-    message_rec = Message()
-    message_rec.decode(request)
-    filename = message_rec.filename
+    while True:
 
-    if message_rec.command == 2: #PLAY
-        filename = message_rec.filename
-        file_path = './database/' + str(filename)
-        message_send = Message()
-        
         try:
-            with open(file_path, 'rb') as f:
-                contents = f.read(1024)
-                while(contents):
-                    print('reading another 1024')
-                    qLock.acquire()
-                    item = q.pop()
-                    qLock.release()
-                    if item == 'stop':
-                        break
+            request = renderer_socket.recv(1024)
+            print('Renderer: {}\n'.format(request))
+        except socket.error, e:
+            err = e.args[0]
+            if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
+                sleep(1)
+                print 'No data available'
+                continue
+            else:
+                # a "real" error occurred
+                print e
+                sys.exit(1)
+        message_rec = Message()
+        message_rec.decode(request)
+        filename = message_rec.filename
 
-                    message_send.payload = contents
-                    renderer_socket.send(message_send.export())
+        if message_rec.command == 2: #PLAY
+            filename = message_rec.filename
+            file_path = './database/' + str(filename)
+            message_send = Message()
+            
+            try:
+                with open(file_path, 'rb') as f:
                     contents = f.read(1024)
-                    qLock.acquire()
-                    q.append('dummy')
-                    qLock.release()
-                    time.sleep(1)
-            f.close()
-        except:
-            message_send.payload('File does not exist')
-            renderer_socket.send(message_send.export())
-    if message_rec.command == 3: #STOP
-        qLock.acquire()
-        q.append('stop')
-        qLock.release()
-        print('stop playing')
-    if message_rec.command == 4: #RESUME
-        qLock.acquire()
-        q.append('resume')
-        qLock.release()
-        print('resume playing')
+                    while(contents):
+                        print('reading another 1024')
+                        qLock.acquire()
+                        item = q.pop()
+                        qLock.release()
+                        if item == 'stop':
+                            break
 
-    renderer_socket.close()
+                        message_send.payload = contents
+                        renderer_socket.send(message_send.export())
+                        contents = f.read(1024)
+                        qLock.acquire()
+                        q.append('dummy')
+                        qLock.release()
+                        time.sleep(1)
+                f.close()
+            except:
+                message_send.payload('File does not exist')
+                renderer_socket.send(message_send.export())
+        if message_rec.command == 3: #STOP
+            qLock.acquire()
+            q.append('stop')
+            qLock.release()
+            print('stop playing')
+        if message_rec.command == 4: #RESUME
+            qLock.acquire()
+            q.append('resume')
+            qLock.release()
+            print('resume playing')
+
+        renderer_socket.close()
 
 def handle_renderer(RtoS_socket):
     while True:
@@ -99,6 +112,7 @@ def main():
 
     RtoS_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     RtoS_socket.bind(("", port_RtoS_command))
+    RtoS_socket.setblocking(0)
     RtoS_socket.listen(5)  # max backlog of connections
 
     pid = fork()

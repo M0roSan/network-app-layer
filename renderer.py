@@ -21,22 +21,21 @@ def handle_controller_connection(controller_socket, RtoS_socket):
                 # a "real" error occurred
                 print e
                 sys.exit(1)
-        else:
+        
+        print('Controller: {}\n'.format(request))
+        message_con = Message(payload='ACK-renderer')
+        controller_socket.send(message_con.export())
 
-            print('Controller: {}\n'.format(request))
-            message_con = Message(payload='ACK-renderer')
-            controller_socket.send(message_con.export())
+        RtoS_socket.send(request)
 
-            RtoS_socket.send(request)
-
-            message = Message()
-            while True:
-                response = RtoS_socket.recv(1024)
-                if not response:
-                    break
-                #message.decode(response)
-                #print(message.payload)
-                print(response)
+        message = Message()
+        while True:
+            response = RtoS_socket.recv(1024)
+            if not response:
+                break
+            #message.decode(response)
+            #print(message.payload)
+            print(response)
     controller_socket.close()
 
 def handle_controller(RtoC_socket, RtoS_socket):
