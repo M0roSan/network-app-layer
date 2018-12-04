@@ -31,18 +31,35 @@ def handle_renderer_connection(renderer_socket):
     filename = message_rec.filename
     file_path = './database/' + str(filename)
     message_send = Message()
-    try:
-        with open(file_path, 'rb') as f:
-            contents = f.read(1024)
-            while(contents):
-                message_send.payload = contents
-                renderer_socket.send(message_send.export())
+    if message_rec.command == 2: #PLAY
+        filename = message_rec.filename
+        file_path = './database/' + str(filename)
+        message_send = Message()
+        try:
+            item = q.get(False)
+            if item == 'stop':
+                item2 = q.get(True)
+                if item2 == 'resume'):
+                    pass
+        except:
+            pass
+        try:
+            with open(file_path, 'rb') as f:
                 contents = f.read(1024)
-                time.sleep(1)
-        f.close()
-    except:
-        message_send.payload('File does not exist')
-        renderer_socket.send(message_send.export())
+                while(contents):
+                    message_send.payload = contents
+                    renderer_socket.send(message_send.export())
+                    contents = f.read(1024)
+            f.close()
+        except:
+            message_send.payload('File does not exist')
+            renderer_socket.send(message_send.export())
+    if message_rec.command == 3: #STOP
+        q.put('stop')
+        print('stop playing')
+    if message_rec.command == 4: #RESUME
+        q.put('resume')
+        print('resume playing')
     renderer_socket.close()
 
 def handle_renderer(RtoS_socket):
