@@ -44,7 +44,7 @@ def handle_renderer_connection(renderer_socket):
                 while(contents):
                     
                     item = q.remove()
-                    if item = 'stop':
+                    if item == 'stop':
                         break
 
                     message_send.payload = contents
