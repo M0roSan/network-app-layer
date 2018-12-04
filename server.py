@@ -39,7 +39,7 @@ def handle_renderer_connection(renderer_socket):
             item = q.get(False)
             if item == 'stop':
                 item2 = q.get(True)
-                if item2 == 'resume'):
+                if item2 == 'resume':
                     pass
         except:
             pass
