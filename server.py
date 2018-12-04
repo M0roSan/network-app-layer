@@ -5,7 +5,7 @@ from os import listdir, fork
 from message import Message
 import time
 
-q = []
+q = ['first item']
 
 def handle_controller_connection(controller_socket):
     request = controller_socket.recv(1024)
@@ -42,16 +42,16 @@ def handle_renderer_connection(renderer_socket):
             with open(file_path, 'rb') as f:
                 contents = f.read(1024)
                 while(contents):
-                    try:
-                        if len(q) > 0:
-                            item = q.pop(0)
-                            if item == 'stop':
-                                break
-                    except:
-                        message_send.payload = contents
-                        renderer_socket.send(message_send.export())
-                        contents = f.read(1024)
-                        time.sleep(1)
+                    
+                    item = q.remove()
+                    if item = 'stop':
+                        break
+
+                    message_send.payload = contents
+                    renderer_socket.send(message_send.export())
+                    contents = f.read(1024)
+                    q.append('dummy')
+                    time.sleep(1)
             f.close()
         except:
             message_send.payload('File does not exist')
