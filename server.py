@@ -50,11 +50,10 @@ def handle_renderer_connection(renderer_socket):
                             if item2 == 'resume':
                                 pass
                     except:
-                        pass
-                    message_send.payload = contents
-                    renderer_socket.send(message_send.export())
-                    contents = f.read(1024)
-                    time.sleep(1)
+                        message_send.payload = contents
+                        renderer_socket.send(message_send.export())
+                        contents = f.read(1024)
+                        time.sleep(1)
             f.close()
         except:
             message_send.payload('File does not exist')
