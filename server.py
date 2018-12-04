@@ -1,9 +1,10 @@
 #!/usr/bin/python
 import socket, optparse
 import threading
+import os, fcntl
 from os import listdir, fork
 from message import Message
-import time, errno, fcntl
+import time, errno
 
 q = ['first item']
 qLock = threading.Lock()
