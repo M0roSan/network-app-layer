@@ -2,20 +2,7 @@
 import socket, optparse
 import threading
 from os import listdir, fork
-import json
 from message import Message
-
-def get_filename(message):
-    """returns string file name retrieved from message"""
-    message_deserialized = json.loads(message)
-    filename = message_deserialized['filename'] #returns unicode
-    return str(filename)
-
-def file_exist(filename):
-    """"return True if the given file exist in our directory"""
-    if filename in listdir('./database'):
-        return True
-    return False
 
 def handle_controller_connection(controller_socket):
     request = controller_socket.recv(1024)
@@ -59,7 +46,7 @@ def handle_renderer_connection(renderer_socket):
 def handle_renderer(RtoS_socket):
     while True:
         renderer_sock, address = RtoS_socket.accept()
-        #print 'Accepted connection from {}:{}'.format(address[0], address[1])
+        print 'Accepted connection from {}:{}'.format(address[0], address[1])
         client_handler = threading.Thread(
             target=handle_renderer_connection,
             args=(renderer_sock,)
