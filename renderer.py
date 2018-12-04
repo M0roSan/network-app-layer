@@ -16,8 +16,9 @@ def handle_controller_connection(controller_socket, RtoS_socket):
         response = RtoS_socket.recv(1024)
         if not response:
             break
-        message.decode(response)
-        print(message.payload)
+        #message.decode(response)
+        #print(message.payload)
+        print(response)
     controller_socket.close()
 
 def handle_controller(RtoC_socket, RtoS_socket):
