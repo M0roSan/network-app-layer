@@ -42,7 +42,7 @@ def handle_renderer_connection(renderer_socket):
             with open(file_path, 'rb') as f:
                 contents = f.read(1024)
                 while(contents):
-                    
+                    print('reading another 1024')
                     item = q.pop()
                     if item == 'stop':
                         break
